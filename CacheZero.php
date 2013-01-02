@@ -4,7 +4,7 @@
  * A simple caching class inspired by Cache_Lite (http://pear.php.net/manual/en/package.caching.cache-lite.php)
  *
  * @author: George Borisov <george at gir dot me dot uk>
- * @version: 20130101.01
+ * @version: 20130102.01
  * @licence: LGPL (https://www.gnu.org/licenses/lgpl-3.0.txt)
  *
  */
@@ -20,7 +20,7 @@ class CacheZero {
 		'modeFile'	=> 0600,	// umask for cache file (int),
 		'modeDir'	=> 0700,	// umask for group / hash directory (int),
 		'protectID'	=> true, // enable / disable id protection in cache file name (boolean)			
-		'protectGroup'	=> true, // enable / disable group protection in cache file name (boolean)			
+		'protectGroup'	=> false, // enable / disable group protection in cache file name (boolean)			
 		'verify' => true, // enable / disable verification of cached data (boolean)
 		'verifyMethod' => 'crc32', // type of verification 'crc32', 'md5', 'strlen' (string)
 	);
