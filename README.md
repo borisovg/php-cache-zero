@@ -8,6 +8,11 @@ Compatibility
 
 PHP 5 only (tested with 5.4.4).
 
+Usage Examples
+--------------
+
+Please see files in the 'examples' directory.
+
 Constructor Options
 -------------------
 
