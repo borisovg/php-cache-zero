@@ -48,15 +48,15 @@ Directory mode used by mkdir().
 
 **bool exitOnError (default: true)**
 
-Configures the behaviour of the error handler. If set to false it an error message and disables caching, but does not terminate the script.
+Configures the behaviour of the error handler. If set to false, it prints an error message and disables caching but does not terminate the script.
 
 **bool protectID (default: true)**
 
-Hash the id with md5 before use. If false, characters that are not alpha-numeric or [-\_?&=.] will be removed.
+Hash the id with md5 before use. If set to false, characters that are not alpha-numeric or [-\_?&=.] will be removed.
 
 **bool protectGroup (default: false)**
 
-Hash the group with md5 before use. If false, characters that are not alpha-numeric or [-\_?&=.] will be removed.
+Hash the group with md5 before use. If set to false, characters that are not alpha-numeric or [-\_?&=.] will be removed.
 
 **bool verify	(default: true)**
 
@@ -75,7 +75,7 @@ Get cache content, if available and valid.
 
 * $id - cache object ID (e.g. $\_SERVER['REQUEST\_URI'])
 * $group - optional group
-* $expiredOK - optional, set to "true" to return cache content even if expired
+* $expiredOK - optional, if set to true will return cache content even if expired
 
 **CacheZero::save(string $data, string $id, string $group = 'default')**
 
@@ -94,4 +94,4 @@ Start capture of output buffer (e.g. echo).
 
 **CacheZero::finish()**
 
-Finish capture of output buffer, save to file and print buffer contents.
+Finish capture of output buffer, save to cache file and print buffer contents.
