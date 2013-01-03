@@ -4,7 +4,7 @@
  * A simple caching class inspired by Cache_Lite (http://pear.php.net/manual/en/package.caching.cache-lite.php)
  *
  * @author: George Borisov <george at gir dot me dot uk>
- * @version: 20130102.01
+ * @version: 20130102.02
  * @licence: LGPL (https://www.gnu.org/licenses/lgpl-3.0.txt)
  *
  */
@@ -48,7 +48,7 @@ class CacheZero {
 		}
 	}
 
-	function get($id, $group = 'default', $doNotTestCacheValidity = false)
+	function get($id, $group = 'default', $expiredOK = false)
 	{
 		$data = false;
 		if ($this->options['caching']) {

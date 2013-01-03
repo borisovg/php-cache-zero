@@ -11,13 +11,13 @@ PHP 5 only (tested with 5.4.4).
 Public Methods
 --------------
 
-CacheZero::get(string $id, string $group = 'default', boolean $doNotTestCacheValidity = false)
+CacheZero::get(string $id, string $group = 'default', boolean $expiredOK = false)
 
 Get cache content, if available and valid.
 
 * $id - cache object ID (e.g. $_SERVER['REQUEST_URI'])
 * $group - optional group
-* $doNotTestCacheValidity - optional, set to "true" to return cache content even if expired
+* $expiredOK - optional, set to "true" to return cache content even if expired
 
 CacheZero::save(string $data, string $id, string $group = 'default')
 
