@@ -86,10 +86,19 @@ class CacheZero {
 	{
 		$a = array();
 		$a['id'] = 'cache_';
-		$a['id'] .= ($this->options['protectID']) ? md5($id) : $id;
+		$regex = '/[^\w\-\?\&\.=]/';
+		if ($this->options['protectID']) {
+			$a['id'] .= md5($id);
+		} else {
+			$a['id'] .= preg_replace($regex, '', $id);
+		}
 		$a['path'] = $_SERVER['DOCUMENT_ROOT'] .'/'. $this->options['cacheDir'];
 		$a['prefix'] = array();
-		$a['prefix'][] = ($this->options['protectGroup']) ? md5($group) : $group;
+		if ($this->options['protectGroup']) {
+			$a['prefix'][] = md5($group);
+		} else {
+			$a['prefix'][] = preg_replace($regex, '', $group);
+		}
 		if ($this->options['hashedDirectoryLevel']) {
 			$hash = ($this->options['protectID']) ? $id : md5($id);
 			for ($i=0; $i < $this->options['hashedDirectoryLevel']; ++$i) {
