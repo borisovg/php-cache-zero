@@ -4,7 +4,7 @@
  * A simple caching class inspired by Cache_Lite (http://pear.php.net/manual/en/package.caching.cache-lite.php)
  *
  * @author: George Borisov <george at gir dot me dot uk>
- * @version: 20130102.02
+ * @version: 20130102.03
  * @licence: LGPL (https://www.gnu.org/licenses/lgpl-3.0.txt)
  *
  */
@@ -12,17 +12,18 @@
 class CacheZero {
 
 	private $options = array(
-		'cacheDir'	=> 'cache',	// directory where to put the cache files (string),
-		'caching'	=> true,		// enable / disable caching (boolean),
-		'fileLocking' => true,		// enable / disable fileLocking (boolean),
+		'cacheDir'			=> 'cache',	// directory where to put the cache files (string),
+		'caching'				=> true,		// enable / disable caching (boolean),
+		'fileLocking' 	=> true,		// enable / disable fileLocking (boolean),
 		'hashedDirectoryLevel' => 0,	// level of the hashed directory system (int),
-		'lifeTime'	=> 3600,		// cache lifetime in seconds (int),
-		'modeFile'	=> 0600,	// umask for cache file (int),
-		'modeDir'	=> 0700,	// umask for group / hash directory (int),
-		'protectID'	=> true, // enable / disable id protection in cache file name (boolean)			
-		'protectGroup'	=> false, // enable / disable group protection in cache file name (boolean)			
-		'verify' => true, // enable / disable verification of cached data (boolean)
-		'verifyMethod' => 'crc32', // type of verification 'crc32', 'md5', 'strlen' (string)
+		'lifeTime'			=> 3600,		// cache lifetime in seconds (int),
+		'modeFile'			=> 0600,		// mode for cache file (int),
+		'modeDir'				=> 0700,		// mode for group / hash directory (int),
+		'exitOnError'		=> true,		// exit on error (bool)
+		'protectID'			=> true,		// enable / disable id protection in cache file name (boolean)			
+		'protectGroup'	=> false,		// enable / disable group protection in cache file name (boolean)			
+		'verify' 				=> true,		// enable / disable verification of cached data (boolean)
+		'verifyMethod' 	=> 'crc32', // type of verification 'crc32', 'md5', 'strlen' (string)
 	);
 
 	private $id;
@@ -112,7 +113,7 @@ class CacheZero {
 	{
 		mkdir($path, $this->options['modeDir']);
 		if (!file_exists($path) || !is_dir($path)) {
-			exit("ERROR: Unable to create directory ($path)");
+			$this->error("Unable to create directory ($path)");
 		}
 	}
 
@@ -153,7 +154,7 @@ class CacheZero {
 		$a = $this->getFilePath($id, $group);
 		$path = $a['path'];
 		if (!$path || !file_exists($path)) {
-			exit("ERROR: Cache directory missing ($path)");	// paranoia
+			$this->error("Cache directory missing ($path)");	// paranoia
 		}
 		while (count($a['prefix'])) {
 			$path .= '/'. array_shift($a['prefix']);
@@ -164,20 +165,22 @@ class CacheZero {
 		$path = "$path/$a[id]";
 		$fh = fopen($path, 'wb');
 		if (!$fh) {
-			exit("ERROR: Unable to open cache file ($path)");
+			$this->error("Unable to open cache file ($path)");
 		}
-		if ($this->options['fileLocking']) {
-			flock($fh, LOCK_EX);
+		if ($this->options['caching']) {	// check again in case caching was disabled by error handler
+			if ($this->options['fileLocking']) {
+				flock($fh, LOCK_EX);
+			}
+			if ($this->options['verify']) {
+				fwrite($fh, $this->hash($data) ."\n");
+			}
+			fwrite($fh, $data);
+			if ($this->options['fileLocking']) {
+				flock($fh, LOCK_UN);
+			}
+			fclose($fh);
+			chmod($path, $this->options['modeFile']);
 		}
-		if ($this->options['verify']) {
-			fwrite($fh, $this->hash($data) ."\n");
-		}
-		fwrite($fh, $data);
-		if ($this->options['fileLocking']) {
-			flock($fh, LOCK_UN);
-		}
-		fclose($fh);
-		chmod($path, $this->options['modeFile']);
 	}
 
 	private function hash($data)
@@ -191,9 +194,20 @@ class CacheZero {
 		} elseif ($method === 'strlen') {
 			$hash = strlen($data);
 		} else {
-			exit("ERROR: Invalid verification method ($method)"); // paranoia
+		$this->error("Invalid verification method ($method)"); // paranoia
 		}
 		return $hash;
+	}
+
+	private function error($msg)
+	{
+		$msg = "ERROR: $msg\n";
+		if ($this->options['exitOnError']) {
+			exit($msg);
+		} else {
+			echo $msg;
+			$this->options['caching'] = false;	// disable caching
+		}
 	}
 }
 
